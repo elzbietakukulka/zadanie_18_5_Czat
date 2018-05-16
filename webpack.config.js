@@ -1,37 +1,42 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const OptimizeJsPlugin = require('optimize-js-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+//modules import
+const   path = require('path'),
+        webpack = require('webpack'),
+        UglifyJSPlugin = require('uglifyjs-webpack-plugin'),
+        HtmlWebpackPlugin = require('html-webpack-plugin'),
+        OptimizeJSPlugin = require('optimize-js-plugin');
+//enviroment variable
+let env = process.env.NODE_ENV || 'development';
 
-const plugins = [new HtmlWebpackPlugin({
-    template: 'src/index.html',
-    filename: 'index.html',
-    inject: 'body'
-})];
-
-//webpack.config.js
-module.exports = (env) => {
-    const environment = env || 'production';
+//plugins configuration
+const plugins = [
+        new HtmlWebpackPlugin({
+        template: 'src/index.html',
+        filename: 'index.html',
+        inject: 'body'
+    })];
+   
     if (env === 'production') {
         plugins.push(
-            new OptimizeJsPlugin({
+            new webpack.optimize.UglifyJsPlugin(),
+            new OptimizeJSPlugin({
                 sourceMap: false
             })
         )
     }
 
-    return {
-        
-        entry: (env !== 'production' ? [
-                'react-hot-loader/patch',
-                'webpack-dev-server/client?http://localhost:8080',
-                'webpack/hot/only-dev-server',
-            ] : []).concat(['./client/index.js']),
-        output: {
-          filename: './bundle.js',
-          path: path.resolve(__dirname, 'public'),
-        },
 
+
+//webpack.config.js
+module.exports =  {
+        entry: (env !== 'production' ? [
+            'react-hot-loader/patch',
+            'webpack-dev-server/client?http://localhost:8080',
+            'webpack/hot/only-dev-server',
+        ] : []).concat(['./client/index.js']),
+        output: {
+            filename: './bundle.js',
+            path: path.resolve(__dirname, 'public'),
+        },
         module: {
             rules: [
                 {
@@ -52,10 +57,5 @@ module.exports = (env) => {
                 }
             ]
         },
-
-
         plugins: plugins
-        
-
-    }
 };
